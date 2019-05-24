@@ -78,7 +78,7 @@ public class TelegramHandler implements Runnable {
         sync();
     }
 
-    private static void sync() {
+    public static void sync() {
         ConfigManager.sync(Reference.MODID, Config.Type.INSTANCE);
     }
 }

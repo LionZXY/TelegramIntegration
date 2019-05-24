@@ -34,6 +34,18 @@ public class Reference {
         @Config.Comment("the bot api token")
         public static String apiToken = "";
 
+        @Config.Comment("if true, resend message from telegram to minecraft")
+        public static boolean chatFromTelegram = false;
+
+        @Config.Comment("timeout in seconds for long pooling update")
+        public static int longPoolingTimeout = 10;
+
+        @Config.Comment("timeout in seconds for long pooling update")
+        public static boolean receiveMessageOnlyFromChatIDs = true;
+
+        @Config.Comment("verbose logging telegram answer")
+        public static boolean logTelegramAnswer = false;
+
         @Config.Comment("true to send the server chat messages to Telegram (one-way ONLY)")
         public static boolean chatRelay = false;
     }
