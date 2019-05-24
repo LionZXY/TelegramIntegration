@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class UserObject {
     @SerializedName("id")
-    private Integer id = 0;
+    private Long id = 0L;
     @SerializedName("is_bot")
     private Boolean isBot = false;
     @SerializedName("first_name")
@@ -14,11 +14,11 @@ public class UserObject {
     @SerializedName("username")
     private String username = "";
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

@@ -4,17 +4,17 @@ import com.google.gson.annotations.SerializedName;
 
 public class UpdateObject {
     @SerializedName("update_id")
-    private Integer updateId = 0;
+    private Long updateId = 0L;
     @SerializedName("message")
     private MessageObject message = null;
     @SerializedName("edited_message")
     private MessageObject editedMessage = null;
 
-    public Integer getUpdateId() {
+    public Long getUpdateId() {
         return updateId;
     }
 
-    public void setUpdateId(Integer updateId) {
+    public void setUpdateId(Long updateId) {
         this.updateId = updateId;
     }
 

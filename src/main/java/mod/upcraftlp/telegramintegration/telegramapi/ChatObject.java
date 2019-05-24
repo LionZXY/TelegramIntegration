@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class ChatObject {
     @SerializedName("id")
-    private Integer id = 0;
+    private Long id = 0L;
     @SerializedName("type")
     private String type = "";
     @SerializedName("title")
@@ -24,11 +24,11 @@ public class ChatObject {
     @SerializedName("pinned_message")
     private MessageObject pinnedMessage = null;
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

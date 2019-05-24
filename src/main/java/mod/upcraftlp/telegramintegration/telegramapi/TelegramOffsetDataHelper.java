@@ -3,10 +3,10 @@ package mod.upcraftlp.telegramintegration.telegramapi;
 import java.io.*;
 
 public class TelegramOffsetDataHelper {
-    private static Integer offset = -1;
+    private static Long offset = -1L;
     private static File offsetFile = new File("telegramintegrationsoffset.dat");
 
-    public static Integer getOffset() throws IOException {
+    public static Long getOffset() throws IOException {
         if (offset < 0) {
             if (!offsetFile.exists()) {
                 offsetFile.createNewFile();
@@ -14,15 +14,15 @@ public class TelegramOffsetDataHelper {
 
             String offsetText = readFile(offsetFile);
             if (offsetText.length() == 0) {
-                offset = 0;
+                offset = 0L;
             } else {
-                offset = Integer.valueOf(offsetText.replaceAll("[\\n\\t ]", "").trim());
+                offset = Long.valueOf(offsetText.replaceAll("[\\n\\t ]", "").trim());
             }
         }
         return offset;
     }
 
-    public static void setIfLargerOffset(Integer localOffset) throws IOException {
+    public static void setIfLargerOffset(Long localOffset) throws IOException {
         if (localOffset <= offset) {
             return;
         }

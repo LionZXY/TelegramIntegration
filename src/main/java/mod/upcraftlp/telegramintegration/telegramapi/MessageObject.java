@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class MessageObject {
     @SerializedName("message_id")
-    private Integer messageId = 0;
+    private Long messageId = 0L;
     @SerializedName("from")
     private UserObject from = null;
     @SerializedName("date")
@@ -14,7 +14,7 @@ public class MessageObject {
     @SerializedName("forward_from")
     private UserObject forwardFrom = null;
     private ChatObject forwardFromChat = null;
-    private Integer forwardFromMessageId = null;
+    private Long forwardFromMessageId = null;
     @SerializedName("forward_signature")
     private String forwardSignature = null;
     @SerializedName("forward_sender_name")
@@ -32,11 +32,11 @@ public class MessageObject {
     @SerializedName("text")
     private String text = "";
 
-    public Integer getMessageId() {
+    public Long getMessageId() {
         return messageId;
     }
 
-    public void setMessageId(Integer messageId) {
+    public void setMessageId(Long messageId) {
         this.messageId = messageId;
     }
 
@@ -80,11 +80,11 @@ public class MessageObject {
         this.forwardFromChat = forwardFromChat;
     }
 
-    public Integer getForwardFromMessageId() {
+    public Long getForwardFromMessageId() {
         return forwardFromMessageId;
     }
 
-    public void setForwardFromMessageId(Integer forwardFromMessageId) {
+    public void setForwardFromMessageId(Long forwardFromMessageId) {
         this.forwardFromMessageId = forwardFromMessageId;
     }
 
