@@ -10,7 +10,8 @@ import javax.annotation.Nonnull;
 public class TelegramMessageFormatter implements IMessageReceiver {
     @Override
     public void onTelegramMessage(UserObject userObject, @Nonnull String message) {
-        String textMessage = String.format("TelegramIntegration: [%s] %s", userObject.getUsername(), message);
-        FMLCommonHandler.instance().getMinecraftServerInstance().sendMessage(new TextComponentString(message));
+        String textMessage = Reference.TelegramConfig.messageTemplate.replaceAll("%nickname%", userObject.getUsername()).replaceAll("%message%", message);
+
+        FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().sendMessage(new TextComponentString(textMessage));
     }
 }

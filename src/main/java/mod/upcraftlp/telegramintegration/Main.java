@@ -1,12 +1,10 @@
 package mod.upcraftlp.telegramintegration;
 
 import com.google.common.collect.Lists;
-import mod.upcraftlp.telegramintegration.telegramapi.IMessageReceiver;
 import mod.upcraftlp.telegramintegration.telegramapi.TelegramLoop;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.StringUtils;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -20,7 +18,6 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.annotation.Nonnull;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;

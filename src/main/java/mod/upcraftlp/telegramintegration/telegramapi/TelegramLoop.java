@@ -6,19 +6,13 @@ import mod.upcraftlp.telegramintegration.Main;
 import mod.upcraftlp.telegramintegration.Reference;
 import mod.upcraftlp.telegramintegration.TelegramHandler;
 import mod.upcraftlp.telegramintegration.utils.HttpUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.http.util.TextUtils;
 import org.apache.logging.log4j.Level;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Type;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class TelegramLoop extends Thread {
     private final String BASE_URL = "https://api.telegram.org/bot" + Reference.TelegramConfig.apiToken;
@@ -58,12 +52,17 @@ public class TelegramLoop extends Thread {
             return;
         }
 
-        if (updateObject.getMessage() == null || TextUtils.isEmpty(updateObject.getMessage().getText())) {
+        if (updateObject.getMessage() == null) {
             logInfoInternal("I received message without text");
             return;
         }
 
         String messageText = updateObject.getMessage().getText();
+
+        if (messageText == null || messageText.length() == 0) {
+            logInfoInternal("I received message without text");
+            return;
+        }
 
         if (globalMessageReceiver != null) {
             globalMessageReceiver.onTelegramMessage(updateObject.getMessage().getFrom(), messageText);

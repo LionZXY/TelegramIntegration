@@ -5,6 +5,7 @@ import net.minecraftforge.common.config.ConfigManager;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,7 +29,7 @@ public class TelegramHandler implements Runnable {
 
     @Override
     public void run() {
-        String toSend = "https://api.telegram.org/bot" + Reference.TelegramConfig.apiToken + "/sendMessage?parse_mode=Markdown&chat_id=" + this.destination + "&text=" + this.message;
+        String toSend = "https://api.telegram.org/bot" + Reference.TelegramConfig.apiToken + "/sendMessage?parse_mode=Markdown&chat_id=" + this.destination + "&text=" + URLEncoder.encode(this.message);
         try {
             URL url = new URL(toSend);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();

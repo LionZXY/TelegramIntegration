@@ -1,10 +1,5 @@
 package mod.upcraftlp.telegramintegration.telegramapi;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.server.MinecraftServer;
-import net.minecraftforge.common.config.Configuration;
-import org.apache.http.util.TextUtils;
-
 import java.io.*;
 
 public class TelegramOffsetDataHelper {
@@ -17,11 +12,11 @@ public class TelegramOffsetDataHelper {
                 offsetFile.createNewFile();
             }
 
-            String offsetText = readFile(offsetFile).replaceAll("[\\n\\t ]", "").trim();
-            if (TextUtils.isEmpty(offsetText)) {
+            String offsetText = readFile(offsetFile);
+            if (offsetText.length() == 0) {
                 offset = 0;
             } else {
-                offset = Integer.valueOf(offsetText);
+                offset = Integer.valueOf(offsetText.replaceAll("[\\n\\t ]", "").trim());
             }
         }
         return offset;

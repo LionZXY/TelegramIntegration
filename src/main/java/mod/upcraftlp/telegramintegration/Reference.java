@@ -40,6 +40,9 @@ public class Reference {
         @Config.Comment("timeout in seconds for long pooling update")
         public static int longPoolingTimeout = 10;
 
+        @Config.Comment("message template for minecraft message.  is nickname")
+        public static String messageTemplate = "TelegramIntegration: [%nickname%] %message%";
+
         @Config.Comment("timeout in seconds for long pooling update")
         public static boolean receiveMessageOnlyFromChatIDs = true;
 
