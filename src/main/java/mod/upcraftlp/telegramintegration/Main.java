@@ -2,9 +2,15 @@ package mod.upcraftlp.telegramintegration;
 
 import com.google.common.collect.Lists;
 import mod.upcraftlp.telegramintegration.telegramapi.TelegramLoop;
+import mod.upcraftlp.telegramintegration.utils.LanguageUtils;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.StringUtils;
+import net.minecraft.util.text.translation.LanguageMap;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -18,6 +24,7 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
@@ -64,6 +71,8 @@ public class Main {
         }
         if (hasConnection()) log.info("Successfully established connection to the telegram services!");
         else log.warn("Unable to connect to the telegram services.");
+
+        LanguageUtils.switchServerToLocal();
     }
 
     private static final List<String> QUOTES = Lists.newArrayList(
@@ -120,7 +129,12 @@ public class Main {
                 EntityPlayerMP player = (EntityPlayerMP) event.getEntityLiving();
                 if (Reference.TelegramConfig.pvpOnly && !(event.getSource().getTrueSource() instanceof EntityPlayer))
                     return;
-                String message = player.getCombatTracker().getDeathMessage().getUnformattedText();
+                //I18n.translateToLocal()
+                ITextComponent textComponent = player.getCombatTracker().getDeathMessage();
+                if (textComponent instanceof TextComponentTranslation) {
+                    textComponent = new TextComponentString(I18n.translateToLocal(((TextComponentTranslation) textComponent).getKey()));
+                }
+                String message = textComponent.getUnformattedText();
                 TelegramHandler.postToAll(message);
             }
         }
