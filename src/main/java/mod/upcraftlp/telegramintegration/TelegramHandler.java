@@ -30,6 +30,7 @@ public class TelegramHandler implements Runnable {
     @Override
     public void run() {
         String toSend = "https://api.telegram.org/bot" + Reference.TelegramConfig.apiToken + "/sendMessage?parse_mode=Markdown&chat_id=" + this.destination + "&text=" + URLEncoder.encode(this.message);
+        
         try {
             URL url = new URL(toSend);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();

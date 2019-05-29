@@ -3,6 +3,7 @@ package mod.upcraftlp.telegramintegration;
 import com.google.common.collect.Lists;
 import mod.upcraftlp.telegramintegration.telegramapi.TelegramLoop;
 import mod.upcraftlp.telegramintegration.utils.LanguageUtils;
+import mod.upcraftlp.telegramintegration.utils.TextUtils;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -90,9 +91,9 @@ public class Main {
     @Mod.EventHandler
     public void serverStarting(FMLServerStartingEvent event) {
         log.info(QUOTES.get((int) (Math.random() * QUOTES.size())));
-        if (Reference.TelegramConfig.serverStartStop) TelegramHandler.postToAll("Server has been started!");
+        if (Reference.TelegramConfig.serverStartStop) TelegramHandler.postToAll("\\[ Сервер запущен ]");
         if (ForgeVersion.getResult(FMLCommonHandler.instance().findContainerFor(instance)).status == ForgeVersion.Status.OUTDATED) {
-            TelegramHandler.postToAll("There's a new update for the mod! Download it [here](" + Reference.UPDATE_URL + ")!");
+            TelegramHandler.postToAll("There's a new update for the mod! Download it \\[here](" + Reference.UPDATE_URL + ")!");
         }
         event.registerServerCommand(new CommandTelegram());
 
@@ -110,11 +111,12 @@ public class Main {
         for (String id : Reference.TelegramConfig.chatIDs) {
             telegramLoop.setListener(new TelegramMessageFormatter(), id);
         }
+        telegramLoop.setListener(new TelegramCommandHandler(), null);
     }
 
     @Mod.EventHandler
     public void serverStopping(FMLServerStoppingEvent event) {
-        if (Reference.TelegramConfig.serverStartStop) TelegramHandler.postToAll("Server has been stopped!");
+        if (Reference.TelegramConfig.serverStartStop) TelegramHandler.postToAll("\\[ Сервер остановлен ]");
         if (telegramLoop != null) {
             telegramLoop.interrupt();
         }
@@ -131,25 +133,22 @@ public class Main {
                     return;
                 //I18n.translateToLocal()
                 ITextComponent textComponent = player.getCombatTracker().getDeathMessage();
-                if (textComponent instanceof TextComponentTranslation) {
-                    textComponent = new TextComponentString(I18n.translateToLocal(((TextComponentTranslation) textComponent).getKey()));
-                }
-                String message = textComponent.getUnformattedText();
-                TelegramHandler.postToAll(message);
+                String message = TextUtils.boldInText(textComponent.getUnformattedText(), player.getGameProfile().getName());
+                TelegramHandler.postToAll("\\[ " + message + " ]");
             }
         }
 
         @SubscribeEvent
         public static void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event) {
             if (!Reference.TelegramConfig.announceJoinLeave) return;
-            String message = "*" + event.player.getDisplayNameString() + "* _logged in._";
+            String message = "\\[ Игрок *" + event.player.getDisplayNameString() + "* зашел в игру ]";
             TelegramHandler.postToAll(message);
         }
 
         @SubscribeEvent
         public static void onPlayerDisconnect(PlayerEvent.PlayerLoggedOutEvent event) {
             if (!Reference.TelegramConfig.announceJoinLeave) return;
-            String message = "*" + event.player.getDisplayNameString() + "* _logged out._";
+            String message = "\\[ Игрок *" + event.player.getDisplayNameString() + "* вышел из игры ]";
             TelegramHandler.postToAll(message);
         }
 

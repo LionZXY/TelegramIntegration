@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Level;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -21,8 +22,7 @@ public class TelegramLoop extends Thread {
     private final Type updateType = new TypeToken<TelegramAnswerObject<List<UpdateObject>>>() {
     }.getType();
     private final Gson gson = new Gson();
-    @Nullable
-    private IMessageReceiver globalMessageReceiver;
+    private List<IMessageReceiver> globalMessageReceivers = new ArrayList<>();
 
     public TelegramLoop() {
         TelegramHandler.sync();
@@ -57,25 +57,18 @@ public class TelegramLoop extends Thread {
             return;
         }
 
-        String messageText = updateObject.getMessage().getText();
-
-        if (messageText == null || messageText.length() == 0) {
-            logInfoInternal("I received message without text");
-            return;
-        }
-
-        if (globalMessageReceiver != null) {
-            globalMessageReceiver.onTelegramMessage(updateObject.getMessage().getFrom(), messageText);
+        for (IMessageReceiver receivers : globalMessageReceivers) {
+            receivers.onTelegramObjectMessage(updateObject.getMessage());
         }
 
         IMessageReceiver receiver = receiverMap.get(String.valueOf(updateObject.getMessage().getChat().getId()));
 
         if (receiver != null) {
-            receiver.onTelegramMessage(updateObject.getMessage().getFrom(), messageText);
+            receiver.onTelegramObjectMessage(updateObject.getMessage());
         }
     }
 
-    private void logInfoInternal(String log) {
+    protected static void logInfoInternal(String log) {
         if (!Reference.TelegramConfig.logTelegramAnswer) {
             return;
         }
@@ -84,7 +77,7 @@ public class TelegramLoop extends Thread {
 
     public void setListener(IMessageReceiver messageReceiver, @Nullable String destination) {
         if (destination == null) {
-            globalMessageReceiver = messageReceiver;
+            globalMessageReceivers.add(messageReceiver);
             return;
         }
         receiverMap.put(destination, messageReceiver);
