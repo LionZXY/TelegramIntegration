@@ -69,7 +69,7 @@ public class TelegramLoop extends Thread {
     }
 
     protected static void logInfoInternal(String log) {
-        if (!Reference.TelegramConfig.logTelegramAnswer) {
+        if (!Reference.TelegramConfig.verbosLogging) {
             return;
         }
         Main.getLogger().log(Level.INFO, log);

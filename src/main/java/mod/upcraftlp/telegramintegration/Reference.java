@@ -46,8 +46,8 @@ public class Reference {
         @Config.Comment("timeout in seconds for long pooling update")
         public static boolean receiveMessageOnlyFromChatIDs = true;
 
-        @Config.Comment("verbose logging telegram answer")
-        public static boolean logTelegramAnswer = false;
+        @Config.Comment("verbose logging for telegram")
+        public static boolean verbosLogging = false;
 
         @Config.Comment("true to send the server chat messages to Telegram (one-way ONLY)")
         public static boolean chatRelay = false;

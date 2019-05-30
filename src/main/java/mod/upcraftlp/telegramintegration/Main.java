@@ -17,6 +17,7 @@ import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
@@ -72,7 +73,10 @@ public class Main {
         }
         if (hasConnection()) log.info("Successfully established connection to the telegram services!");
         else log.warn("Unable to connect to the telegram services.");
+    }
 
+    @Mod.EventHandler
+    public void postInit(FMLPostInitializationEvent event) {
         LanguageUtils.switchServerToLocal();
     }
 
@@ -132,7 +136,7 @@ public class Main {
                 if (Reference.TelegramConfig.pvpOnly && !(event.getSource().getTrueSource() instanceof EntityPlayer))
                     return;
                 //I18n.translateToLocal()
-                ITextComponent textComponent = player.getCombatTracker().getDeathMessage();
+                ITextComponent textComponent = LanguageUtils.transformTextComponent(player.getCombatTracker().getDeathMessage());
                 String message = TextUtils.boldInText(textComponent.getUnformattedText(), player.getGameProfile().getName());
                 TelegramHandler.postToAll("\\[ " + message + " ]");
             }

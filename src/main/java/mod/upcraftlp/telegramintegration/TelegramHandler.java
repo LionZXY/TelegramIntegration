@@ -1,11 +1,16 @@
 package mod.upcraftlp.telegramintegration;
 
+import mod.upcraftlp.telegramintegration.utils.HttpUtils;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -29,19 +34,20 @@ public class TelegramHandler implements Runnable {
 
     @Override
     public void run() {
-        String toSend = "https://api.telegram.org/bot" + Reference.TelegramConfig.apiToken + "/sendMessage?parse_mode=Markdown&chat_id=" + this.destination + "&text=" + URLEncoder.encode(this.message);
-        
+        String baseUrl = "https://api.telegram.org/bot" + Reference.TelegramConfig.apiToken + "/sendMessage";
+
+        List<NameValuePair> params = new ArrayList<>();
+        params.add(new BasicNameValuePair("parse_mode", "Markdown"));
+        params.add(new BasicNameValuePair("chat_id", destination));
+        params.add(new BasicNameValuePair("text", message));
+
         try {
-            URL url = new URL(toSend);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("POST");
-            int response = connection.getResponseCode();
-            if(response != 200) {
-                Main.getLogger().warn("there were errors communicating with the Telegram Services!\nResponse: " + response);
+            String response = HttpUtils.doPostRequest(baseUrl, params);
+            if (Reference.TelegramConfig.verbosLogging) {
+                Main.getLogger().info("Telegram answer >> " + response);
             }
-            connection.disconnect();
         } catch (Exception e) {
-            e.printStackTrace();
+            Main.getLogger().error(e);
         }
     }
 
@@ -52,12 +58,12 @@ public class TelegramHandler implements Runnable {
     }
 
     public static void post(String destination, String message) {
-        if(Main.hasConnection()) SERVICE.execute(new TelegramHandler(destination, message));
+        if (Main.hasConnection()) SERVICE.execute(new TelegramHandler(destination, message));
     }
 
     public static boolean add(String arg) {
         List<String> IDs = new LinkedList<>(Arrays.asList(Reference.TelegramConfig.chatIDs));
-        if(IDs.contains(arg)) return false;
+        if (IDs.contains(arg)) return false;
         IDs.add(arg);
         Reference.TelegramConfig.chatIDs = IDs.toArray(new String[0]);
         sync();
@@ -66,7 +72,7 @@ public class TelegramHandler implements Runnable {
 
     public static boolean remove(int index) {
         List<String> IDs = new LinkedList<>(Arrays.asList(Reference.TelegramConfig.chatIDs));
-        if(IDs.size() > index) {
+        if (IDs.size() > index) {
             IDs.remove(index);
             Reference.TelegramConfig.chatIDs = IDs.toArray(new String[0]);
             sync();
