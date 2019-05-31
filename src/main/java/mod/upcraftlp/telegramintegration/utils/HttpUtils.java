@@ -1,23 +1,15 @@
 package mod.upcraftlp.telegramintegration.utils;
 
 import mod.upcraftlp.telegramintegration.Main;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.message.BasicNameValuePair;
 
+import javax.annotation.Nullable;
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.ArrayList;
+import java.net.*;
+import java.nio.charset.StandardCharsets;
+import java.util.AbstractMap;
 import java.util.List;
 
 public class HttpUtils {
-    private static HttpClient client = HttpClientBuilder.create().build();
 
     /**
      * Executes a simple HTTP-GET request
@@ -40,45 +32,84 @@ public class HttpUtils {
         return response.toString();
     }
 
-    public static String doPostRequest(String baseUrl, List<NameValuePair> params) throws IOException {
-        HttpPost request = new HttpPost(baseUrl);
-        request.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
-        HttpResponse response = client.execute(request);
-        if (response.getStatusLine().getStatusCode() != 200) {
-            Main.getLogger().warn("there were errors communicating with the Telegram Services!\nResponse: " + response);
-        }
-
-        BufferedReader rd = null;
+    @Nullable
+    public static String doPostRequest(String baseUrl, List<AbstractMap.SimpleEntry<String, Object>> params) throws IOException {
+        HttpURLConnection connection = null;
+        OutputStream os = null;
+        InputStream is = null;
         try {
-            rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-            StringBuffer result = new StringBuffer();
-            String line = "";
-            while ((line = rd.readLine()) != null) {
-                result.append(line);
+            byte[] postDataBytes = getQuery(params).getBytes(StandardCharsets.UTF_8);
+
+            connection = (HttpURLConnection) new URL(baseUrl).openConnection();
+            connection.setDoOutput(true);
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            connection.setRequestProperty("charset", "UTF-8");
+            connection.setRequestProperty("Content-Length", Integer.toString(postDataBytes.length));
+
+            os = new DataOutputStream(connection.getOutputStream());
+            os.write(postDataBytes);
+            os.flush();
+            os.close();
+
+            is = new DataInputStream(connection.getInputStream());
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
+            String line;
+            StringBuilder response = new StringBuilder();
+            while ((line = br.readLine()) != null) {
+                response.append(line).append('\r');
             }
-            return result.toString();
+            if (connection.getResponseCode() != 200) {
+                Main.getLogger().warn("there were errors communicating with the Telegram Services! " + connection.getResponseCode() + "\nResponse: " + response);
+            }
+            return response.toString();
         } finally {
-            if (rd != null) {
-                rd.close();
+            if (connection != null) {
+                connection.disconnect();
+            }
+            if (os != null) {
+                try {
+                    os.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if (is != null) {
+                is.close();
             }
         }
     }
 
-    private static String getQuery(List<NameValuePair> params) throws UnsupportedEncodingException {
+    private static String getQuery(List<AbstractMap.SimpleEntry<String, Object>> params) throws UnsupportedEncodingException {
         StringBuilder result = new StringBuilder();
         boolean first = true;
 
-        for (NameValuePair pair : params) {
+        for (AbstractMap.SimpleEntry<String, Object> pair : params) {
             if (first)
                 first = false;
             else
                 result.append("&");
 
-            result.append(URLEncoder.encode(pair.getName(), "UTF-8"));
+            result.append(URLEncoder.encode(pair.getKey(), "UTF-8"));
             result.append("=");
-            result.append(URLEncoder.encode(pair.getValue(), "UTF-8"));
+            result.append(URLEncoder.encode(pair.getValue().toString(), "UTF-8"));
         }
 
         return result.toString();
+    }
+
+    public static boolean isAvailable(String address) {
+        try {
+            final URL url = new URL(address);
+            final URLConnection conn = url.openConnection();
+            conn.connect();
+            conn.getInputStream().close();
+            return true;
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            return false;
+        }
     }
 }

@@ -2,8 +2,6 @@ package mod.upcraftlp.telegramintegration;
 
 import mod.upcraftlp.telegramintegration.telegramapi.IMessageReceiver;
 import mod.upcraftlp.telegramintegration.telegramapi.MessageObject;
-import mod.upcraftlp.telegramintegration.telegramapi.TelegramLoop;
-import mod.upcraftlp.telegramintegration.telegramapi.UserObject;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -40,7 +38,7 @@ public class TelegramCommandHandler extends IMessageReceiver {
 
         StringBuilder sb = new StringBuilder("*Игроки онлайн*\n\n");
         for (int i = 0; i < players.size(); i++) {
-            sb.append(i + 1).append(". ").append(players.get(i)).append('\n');
+            sb.append(i + 1).append(". ").append(players.get(i).replace("_", "\\_")).append('\n');
         }
 
         sb.append("\nВсего игроков: *").append(players.size()).append('*');

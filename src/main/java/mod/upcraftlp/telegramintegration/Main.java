@@ -2,16 +2,13 @@ package mod.upcraftlp.telegramintegration;
 
 import com.google.common.collect.Lists;
 import mod.upcraftlp.telegramintegration.telegramapi.TelegramLoop;
+import mod.upcraftlp.telegramintegration.utils.HttpUtils;
 import mod.upcraftlp.telegramintegration.utils.LanguageUtils;
 import mod.upcraftlp.telegramintegration.utils.TextUtils;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.util.text.translation.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.StringUtils;
-import net.minecraft.util.text.translation.LanguageMap;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -26,9 +23,6 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.InputStream;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.List;
 
 /**
@@ -65,11 +59,7 @@ public class Main {
         if (StringUtils.isNullOrEmpty(Reference.TelegramConfig.apiToken)) {
             log.error("no API token set, disabling mod!");
         } else {
-            try {
-                hasConnection = InetAddress.getByName("api.telegram.org") != null;
-            } catch (UnknownHostException e) {
-                hasConnection = false;
-            }
+            hasConnection = HttpUtils.isAvailable("https://api.telegram.org/");
         }
         if (hasConnection()) log.info("Successfully established connection to the telegram services!");
         else log.warn("Unable to connect to the telegram services.");
@@ -135,8 +125,7 @@ public class Main {
                 EntityPlayerMP player = (EntityPlayerMP) event.getEntityLiving();
                 if (Reference.TelegramConfig.pvpOnly && !(event.getSource().getTrueSource() instanceof EntityPlayer))
                     return;
-                //I18n.translateToLocal()
-                ITextComponent textComponent = LanguageUtils.transformTextComponent(player.getCombatTracker().getDeathMessage());
+                ITextComponent textComponent = player.getCombatTracker().getDeathMessage();
                 String message = TextUtils.boldInText(textComponent.getUnformattedText(), player.getGameProfile().getName());
                 TelegramHandler.postToAll("\\[ " + message + " ]");
             }

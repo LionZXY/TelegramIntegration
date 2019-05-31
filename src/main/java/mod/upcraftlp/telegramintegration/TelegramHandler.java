@@ -3,17 +3,8 @@ package mod.upcraftlp.telegramintegration;
 import mod.upcraftlp.telegramintegration.utils.HttpUtils;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -36,10 +27,10 @@ public class TelegramHandler implements Runnable {
     public void run() {
         String baseUrl = "https://api.telegram.org/bot" + Reference.TelegramConfig.apiToken + "/sendMessage";
 
-        List<NameValuePair> params = new ArrayList<>();
-        params.add(new BasicNameValuePair("parse_mode", "Markdown"));
-        params.add(new BasicNameValuePair("chat_id", destination));
-        params.add(new BasicNameValuePair("text", message));
+        List<AbstractMap.SimpleEntry<String, Object>> params = new ArrayList<>();
+        params.add(new AbstractMap.SimpleEntry<>("parse_mode", "Markdown"));
+        params.add(new AbstractMap.SimpleEntry<>("chat_id", destination));
+        params.add(new AbstractMap.SimpleEntry<>("text", message));
 
         try {
             String response = HttpUtils.doPostRequest(baseUrl, params);
